@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.welford.spring.boot.blog.initializerstart.mapper.HelloMapper">
+    <sql id="base_user_column">
+        id, name, email
+    </sql>
+    <insert id="saveOrUpdateHello">
+        insert into hello values (#{hello.id}, #{hello.name}, #{hello.email})
+    </insert>
+    <delete id="deleteHelloById">
+        delete from hello where id = #{id}
+    </delete>
+    <select id="getHelloById" resultType="com.welford.spring.boot.blog.initializerstart.domain.Hello">
+        select <include refid="base_user_column"/>
+        from hello
+        where id = #{id}
+    </select>
+    <select id="getListHello" resultType="com.welford.spring.boot.blog.initializerstart.domain.Hello">
+        select <include refid="base_user_column" /> from hello
+    </select>
+</mapper>
