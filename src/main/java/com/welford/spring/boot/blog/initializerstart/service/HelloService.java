@@ -37,4 +37,8 @@ public class HelloService {
     public void deleteHelloById(Long id) {
         helloMapper.deleteHelloById(id);
     }
+
+    public Hello getHelloByName(String name) {
+        return helloMapper.getHelloByName(name);
+    }
 }

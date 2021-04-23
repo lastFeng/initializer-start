@@ -59,3 +59,33 @@
     - 最热
   - 热门标签
   - 热门用户
+
+#### 模块
+##### 权限管理
+- RBAC(Role-Based Access Control)
+    - 隐式访问控制
+    - 显示访问控制
+- 解决方案
+    - Shiro
+    - Spring Security
+###### Spring Security
+- 核心领域概念
+    - 认证(authentication)
+    - 授权(authorization)
+- 身份验证技术
+    - HTTP BASIC
+    - HTTP Digest
+    - HTTP X.509
+    - LDAP
+    - 基于表单的认证
+    - OpenId
+- 模块
+    - Core
+    - Remoting
+    - Web
+    - Config
+    - LDAP
+    - ACL
+    - CAS
+    - OpenId
+    - Test

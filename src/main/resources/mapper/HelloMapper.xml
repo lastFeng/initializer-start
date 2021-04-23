@@ -20,4 +20,9 @@
     <select id="getListHello" resultType="com.welford.spring.boot.blog.initializerstart.domain.Hello">
         select <include refid="base_user_column" /> from hello
     </select>
+    <select id="getHelloByName" resultType="com.welford.spring.boot.blog.initializerstart.domain.Hello">
+        select <include refid="base_user_column" />
+        from hello
+        where name = #{name} limit 1
+    </select>
 </mapper>

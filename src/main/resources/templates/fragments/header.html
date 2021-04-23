@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Hello Test</title>
@@ -8,6 +8,19 @@
 <div th:fragment="header">
     <h1>Thymeleaf in action</h1>
     <a href="/hello">首页</a>
+</div>
+<div sec:authorize="isAuthenticated()">
+    <ul>
+        <li>
+            <span sec:authentication="name"/>
+        </li>
+    </ul>
+    <form action="/logout" th:action="@{/logout}" method="post">
+        <input type="submit" value="退出">
+    </form>
+</div>
+<div sec:authorize="isAnonymous()">
+    <a href="/login" th:href="@{/login}">登录</a>
 </div>
 </body>
 </html>

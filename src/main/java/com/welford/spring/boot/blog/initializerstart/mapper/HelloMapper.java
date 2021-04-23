@@ -16,4 +16,6 @@ public interface HelloMapper {
     void deleteHelloById(@Param("id") Long id);
     Hello getHelloById(@Param("id") Long id);
     List<Hello> getListHello();
+
+    Hello getHelloByName(@Param("name") String name);
 }
