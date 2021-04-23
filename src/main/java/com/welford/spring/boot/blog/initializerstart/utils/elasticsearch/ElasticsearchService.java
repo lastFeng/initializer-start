@@ -31,6 +31,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+@Configuration
 public class ElasticsearchService {
     @Autowired
     private RestClient restClient;
@@ -77,6 +79,16 @@ public class ElasticsearchService {
         setFilterParams(boolBuilder, filterParams);
         sourceBuilder.query(boolBuilder);
 
+        SearchRequest request = new SearchRequest(indices);
+        request.source(sourceBuilder);
+
+        SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
+        return response.getHits().getTotalHits().value;
+    }
+
+    public long count(String[] indices) throws IOException {
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        sourceBuilder.size(0);
         SearchRequest request = new SearchRequest(indices);
         request.source(sourceBuilder);
 
