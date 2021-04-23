@@ -1,4 +1,4 @@
-package com.welford.spring.boot.blog.initializerstart.util;
+package com.welford.spring.boot.blog.initializerstart.utils.contant;
 
 public class Contant {
     public final static String COMMA_SPLIT = ",";

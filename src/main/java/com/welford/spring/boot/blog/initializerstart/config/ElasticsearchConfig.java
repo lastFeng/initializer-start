@@ -1,6 +1,6 @@
 package com.welford.spring.boot.blog.initializerstart.config;
 
-import com.welford.spring.boot.blog.initializerstart.util.Contant;
+import com.welford.spring.boot.blog.initializerstart.utils.contant.Contant;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
