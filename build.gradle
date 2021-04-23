@@ -19,6 +19,7 @@ dependencies {
     implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
     implementation group: 'mysql', name: 'mysql-connector-java'
     implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.1.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-elasticsearch'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
