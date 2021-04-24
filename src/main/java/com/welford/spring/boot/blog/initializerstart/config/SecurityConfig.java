@@ -69,10 +69,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         authenticationProvider.setPasswordEncoder(passwordEncoder); // 设置密码加密方式
         return authenticationProvider;
     }
-
-    public static void main(String[] args) {
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
-        String password = "123456";
-        System.out.println(encoder.encode(password));
-    }
 }
