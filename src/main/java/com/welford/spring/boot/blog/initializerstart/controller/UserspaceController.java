@@ -183,26 +183,19 @@ public class UserspaceController {
     }
 
     @GetMapping("/{username}/blogs/edit")
-    public ModelAndView createBlog(Model model) {
+    public ModelAndView createBlog(@PathVariable("username")String username, Model model) {
         model.addAttribute("blog", new Blog(null, null, null));
         return new ModelAndView("/userspace/blogedit", "blogModel", model);
     }
 
     @PostMapping("/{username}/blogs/edit")
-    @PreAuthorize("authentication.name.equals(#username)")
     public ResponseEntity<Response> saveBlog(@PathVariable("username") String username, @RequestBody Blog blog) {
         User user = (User) userDetailsService.loadUserByUsername(username);
         blog.setUser(user);
 
-        try {
-            blogService.saveBlog(blog);
-        } catch (ConstraintViolationException e)  {
-            return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
-        } catch (Exception e) {
-            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
-        }
+        blogService.saveBlog(blog);
 
-        String redirectUrl = "/u/" + username + "/blogs" + blog.getId();
+        String redirectUrl = "/u/" + username + "/blogs/" + blog.getId();
         return ResponseEntity.ok().body(new Response(true, "处理成功", redirectUrl));
     }
 

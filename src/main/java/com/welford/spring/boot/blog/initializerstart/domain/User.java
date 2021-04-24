@@ -1,5 +1,6 @@
 package com.welford.spring.boot.blog.initializerstart.domain;
 
+import org.hibernate.annotations.Proxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,7 @@ import java.util.List;
  * @date : 2021/4/23
  */
 @Entity
+@Proxy(lazy = false)
 public class User implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
 
