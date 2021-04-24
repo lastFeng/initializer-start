@@ -39,7 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@Configuration
+//@Configuration
 public class ElasticsearchService {
     @Autowired
     private RestClient restClient;

@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.welford.spring.boot.blog.initializerstart.mapper")
+//@MapperScan("com.welford.spring.boot.blog.initializerstart.mapper")
 public class InitializerStartApplication {
 
     public static void main(String[] args) {

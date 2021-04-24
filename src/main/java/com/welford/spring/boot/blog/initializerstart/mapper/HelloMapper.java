@@ -10,12 +10,12 @@ import java.util.List;
  * @author : guoweifeng
  * @date : 2021/4/22
  */
-@Mapper
-public interface HelloMapper {
-    void saveOrUpdateHello(@Param("hello") Hello hello);
-    void deleteHelloById(@Param("id") Long id);
-    Hello getHelloById(@Param("id") Long id);
-    List<Hello> getListHello();
-
-    Hello getHelloByName(@Param("name") String name);
-}
+//@Mapper
+//public interface HelloMapper {
+//    void saveOrUpdateHello(@Param("hello") Hello hello);
+//    void deleteHelloById(@Param("id") Long id);
+//    Hello getHelloById(@Param("id") Long id);
+//    List<Hello> getListHello();
+//
+//    Hello getHelloByName(@Param("name") String name);
+//}
