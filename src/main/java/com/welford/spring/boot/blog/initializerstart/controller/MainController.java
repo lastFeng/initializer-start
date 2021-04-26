@@ -34,6 +34,7 @@ public class MainController {
         return "redirect:/index";
     }
 
+    // TODO: 主页跳转的问题，由于没有数据导致的，这里的配置要进行修改呢
     @GetMapping("/index")
     public String index(){
         return "index";
