@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 /***
  * 尽量使用别的存储
  */
-@Deprecated
-@Repository
-public interface ElasticsearchBlogMapper extends ElasticsearchRepository<ElasticsearchBlog, String> {
-
-}
+//@Deprecated
+//@Repository
+//public interface ElasticsearchBlogMapper extends ElasticsearchRepository<ElasticsearchBlog, String> {
+//
+//}

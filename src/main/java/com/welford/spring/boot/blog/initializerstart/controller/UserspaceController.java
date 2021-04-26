@@ -1,11 +1,13 @@
 package com.welford.spring.boot.blog.initializerstart.controller;
 
 import com.welford.spring.boot.blog.initializerstart.domain.Blog;
+import com.welford.spring.boot.blog.initializerstart.domain.Catalog;
 import com.welford.spring.boot.blog.initializerstart.domain.User;
+import com.welford.spring.boot.blog.initializerstart.domain.Vote;
 import com.welford.spring.boot.blog.initializerstart.domain.vo.Response;
 import com.welford.spring.boot.blog.initializerstart.service.BlogService;
+import com.welford.spring.boot.blog.initializerstart.service.CatalogService;
 import com.welford.spring.boot.blog.initializerstart.service.UserService;
-import com.welford.spring.boot.blog.initializerstart.utils.exception.ConstraintViolationExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -23,7 +25,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,6 +45,9 @@ public class UserspaceController {
 
     @Autowired
     private BlogService blogService;
+
+    @Autowired
+    private CatalogService catalogService;
 
     /**
      * 通过用户名获取用户信息与用户博客
@@ -145,6 +149,12 @@ public class UserspaceController {
         }
 
         Page<Blog> page = null;
+        if (category != null && category > 0) {
+            Catalog catalog = catalogService.getCatalogById(category);
+            Pageable pageable = PageRequest.of(pageIndex, pageSize);
+            page = blogService.listBlogsByCatalog(catalog, pageable);
+            order = "";
+        }
         if (order.equals("hot")) {
             Sort sort = Sort.by(Sort.Direction.DESC, "reading", "comments", "likes");
             Pageable pageable = PageRequest.of(pageIndex, pageSize, sort);
@@ -157,6 +167,9 @@ public class UserspaceController {
         }
 
         List<Blog> list = page.getContent();
+        model.addAttribute("user", user);
+        model.addAttribute("catalogId", category);
+        model.addAttribute("keyword", keyword);
         model.addAttribute("order", order);
         model.addAttribute("page", page);
         model.addAttribute("blogList", list);
@@ -166,43 +179,98 @@ public class UserspaceController {
     @GetMapping("/{username}/blogs/{id}")
     public String getBlogsById(@PathVariable("username") String username,
                                @PathVariable("id") Long id, Model model) {
+
+        User principal = null;
+        Blog blog = blogService.getBlogById(id);
         blogService.readingIncrease(id);
 
         boolean isBlogOwner = false;
         if (SecurityContextHolder.getContext().getAuthentication() != null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
                 &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
-            User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal != null && Objects.equals(username, principal.getUsername())) {
                 isBlogOwner = true;
             }
         }
+
+        List<Vote> votes = blog.getVotes();
+        Vote currentVote = null;
+        if (principal != null) {
+            for (Vote vote : votes) {
+                if (Objects.equals(principal.getUsername(), vote.getUser().getUsername())) {
+                    currentVote = vote;
+                    break;
+                }
+            }
+        }
+
         model.addAttribute("isBlogOwner", isBlogOwner);
         model.addAttribute("blogModel", blogService.getBlogById(id));
+        model.addAttribute("currentVote", currentVote);
 
         return "/userspace/blog";
     }
 
+    @DeleteMapping("/{username}/blogs/{id}")
+    @PreAuthorize("authentication.name.equals(#username)")
+    public ResponseEntity<Response> deleteBlog(@PathVariable("username") String username,
+                                               @PathVariable("id") Long id) {
+        try {
+            blogService.removeBlog(id);
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
+        }
+
+        return ResponseEntity.ok().body(new Response(true, "处理成功", "/u/" + username + "/blogs"));
+    }
+
     @GetMapping("/{username}/blogs/edit")
     public ModelAndView createBlog(@PathVariable("username")String username, Model model) {
+        User user = (User) userDetailsService.loadUserByUsername(username);
+        List<Catalog> catalogs = catalogService.listCatalogs(user);
+
         model.addAttribute("blog", new Blog(null, null, null));
+        model.addAttribute("catalogs", catalogs);
+        return new ModelAndView("/userspace/blogedit", "blogModel", model);
+    }
+
+    @GetMapping("/{username}/blogs/edit/{id}")
+    public ModelAndView editBlog(@PathVariable("username") String username,
+                                 @PathVariable("id") Long id,
+                                 Model model) {
+        User user = (User) userDetailsService.loadUserByUsername(username);
+
+        model.addAttribute("blog", blogService.getBlogById(id));
+        model.addAttribute("catalogs",  catalogService.listCatalogs(user));
         return new ModelAndView("/userspace/blogedit", "blogModel", model);
     }
 
     @PostMapping("/{username}/blogs/edit")
     public ResponseEntity<Response> saveBlog(@PathVariable("username") String username, @RequestBody Blog blog) {
-        User user = (User) userDetailsService.loadUserByUsername(username);
-        blog.setUser(user);
 
-        blogService.saveBlog(blog);
+        if (blog.getCatalog().getId() == null) {
+            return ResponseEntity.ok().body(new Response(false, "未选择分类"));
+        }
+
+        try {
+            if (blog.getId() != null) {
+                Blog origin = blogService.getBlogById(blog.getId());
+                origin.setTitle(blog.getTitle());
+                origin.setContent(blog.getContent());
+                origin.setSummary(blog.getSummary());
+                origin.setCatalog(blog.getCatalog());
+                origin.setTags(blog.getTags());
+                blogService.saveBlog(origin);
+            } else {
+                User user = (User) userDetailsService.loadUserByUsername(username);
+                blog.setUser(user);
+                blogService.saveBlog(blog);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
+        }
 
         String redirectUrl = "/u/" + username + "/blogs/" + blog.getId();
         return ResponseEntity.ok().body(new Response(true, "处理成功", redirectUrl));
-    }
-
-    @GetMapping("/{username}/blogs/edit/{id}")
-    public ModelAndView editBlog(@PathVariable("username") String username,
-                                 @PathVariable("id") Long id, Model model) {
-        model.addAttribute("blog", blogService.getBlogById(id));
-        return new ModelAndView("/userspace/blogedit", "blogModel", model);
     }
 }

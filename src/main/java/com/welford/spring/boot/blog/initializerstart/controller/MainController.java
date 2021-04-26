@@ -1,6 +1,8 @@
 package com.welford.spring.boot.blog.initializerstart.controller;
 
+import com.welford.spring.boot.blog.initializerstart.domain.Authority;
 import com.welford.spring.boot.blog.initializerstart.domain.User;
+import com.welford.spring.boot.blog.initializerstart.service.AuthorityService;
 import com.welford.spring.boot.blog.initializerstart.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author : guoweifeng
@@ -20,8 +24,11 @@ import javax.validation.constraints.NotEmpty;
 @Controller
 @RequestMapping("/")
 public class MainController {
+    private final static Long ROLE_USER_AUTHORITY_ID = 2L;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AuthorityService authorityService;
     @GetMapping
     public String root(){
         return "redirect:/index";
@@ -50,11 +57,16 @@ public class MainController {
     }
 
     @PostMapping("/register")
-    public String createUser(@NotEmpty String name, @NotEmpty @Email String email,
-                             @NotEmpty String username, @NotEmpty String password) {
-        User user = new User(name, email, username, password);
-        user.setEncodePassword(user.getPassword());
-        User save = userService.saveUser(user);
+    public String createUser(User user) {
+        List<Authority> authorities = new ArrayList<>();
+        authorities.add(authorityService.getAuthorityById(ROLE_USER_AUTHORITY_ID));
+        user.setAuthorities(authorities);
+        userService.saveUser(user);
         return "redirect:/login";
+    }
+
+    @GetMapping("/search")
+    public String search(){
+        return "search";
     }
 }
